@@ -1,3 +1,4 @@
 [submodule "third_party/RealtimeSTT"]
 	path = third_party/RealtimeSTT
 	url = https://github.com/RadTuna/RealtimeSTT-SenseVoice-Minimal.git
+	branch = master

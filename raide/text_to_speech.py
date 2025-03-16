@@ -1,7 +1,7 @@
 
 
 # Internal import
-import core.import_secret_key
+import import_secret_key
 
 # External import
 from openai import OpenAI

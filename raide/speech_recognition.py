@@ -1,7 +1,7 @@
 
 # Internal import
-import core.import_secret_key
-from core.audio_inputer import AudioData
+import import_secret_key
+from audio_inputer import AudioData
 
 # External import
 from openai import OpenAI

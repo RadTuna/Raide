@@ -1,15 +1,14 @@
 
 import os
 import sounddevice
-from core.audio_inputer import AudioData
+from audio_inputer import AudioData
 
 # open ai imports
-from core.speech_recognition import OpenAIWhiserASR
-from core.audio_inputer import AudioInputer
+from speech_recognition import OpenAIWhiserASR
+from audio_inputer import AudioInputer
 
-# sense voice imports
-from funasr_onnx import SenseVoiceSmall
-from funasr_onnx.utils.postprocess_utils import rich_transcription_postprocess
+# realtime stt imports
+import RealtimeSTT
 
 def play_audio(audio_data: AudioData):
     sounddevice.play(audio_data.wave, samplerate=audio_data.sample_rate)

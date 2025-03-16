@@ -8,9 +8,9 @@
             "name": "Python Debugger: Program",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/raide/main.py",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
+                "PYTHONPATH": "${workspaceFolder}/raide"
             }
         },
         {
@@ -19,7 +19,7 @@
             "request": "launch",
             "module": "${input:pythonModule}",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
+                "PYTHONPATH": "${workspaceFolder}/raide"
             }
         }
     ],
