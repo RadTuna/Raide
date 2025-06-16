@@ -1,51 +1,45 @@
 
 # Internal imports
-from audio_inputer import AudioInputer, AudioData
-from speech_recognition import OpenAIWhiserASR
 from text_to_speech import OpenAITextToSpeech
+from llm import LocalLanguageModel, LanguageModelConfig
 
 # External imports
-from typing import Annotated
-from typing_extensions import TypedDict
+import RealtimeSTT
+import multiprocessing
 
-from langchain_openai import ChatOpenAI
+enable_tts = False
 
-from langgraph.graph import StateGraph, START, END
-from langgraph.graph.message import add_messages
+def main():
+    asr = RealtimeSTT.AudioToTextRecorder(
+            model_path="./third_party/RealtimeSTT/models/sensevoice_small",
+            silero_use_onnx=True,
+            silero_deactivity_detection=True,
+        )
 
+    config = LanguageModelConfig() # default config
+    config.temperature = 1.0
+    config.top_k = 64
+    llm = LocalLanguageModel(model_path="./models/gemma3/gemma-3-4b-it-Q4_K_M.gguf", config=config)
+    tts = OpenAITextToSpeech()
 
-class State(TypedDict):
-    messages: Annotated[list, add_messages]
+    while True:
+        asr.wait_audio()
+        recognized_text = asr.transcribe()
 
+        print(f"User: {recognized_text}")
 
-openai_model = ChatOpenAI(model = "gpt-4o", temperature = 0.7)
-def process_llm(state: State):
-    response = openai_model.invoke(state["messages"])
-    print(f"LLM: {response}")
-    return { "messages": [ openai_model.invoke(state["messages"]) ] }
+        chunk_list = []
+        print("AI: ", end="")
+        for chunk in llm.chat_sync(recognized_text):
+            print(chunk, end="")
+            chunk_list.append(chunk)
+        print("")
 
+        full_message = "".join(chunk_list)
+        
+        if len(full_message) > 0 and enable_tts:
+            tts.text_to_speech(full_message)
 
-graph_builder = StateGraph(State)
-graph_builder.add_node("llm", process_llm)
-
-graph_builder.add_edge(START, "llm")
-graph_builder.add_edge("llm", END)
-
-# build graph
-graph = graph_builder.compile()
-print(graph.get_graph().draw_ascii())
-
-audio_inputer = AudioInputer()
-asr = OpenAIWhiserASR()
-tts = OpenAITextToSpeech()
-while True:
-    audio_data = audio_inputer.get_audio_from_mic()
-
-    recognized_text = asr.recognize(audio_data=audio_data)
-    print(f"User: {recognized_text}")
-    openai_input = { "role": "user", "content": recognized_text }
-
-    for event in graph.stream(input = {"messages": [openai_input]}):
-        for value in event.values():
-            print("Assistant:", value["messages"][-1].content)
-            tts.text_to_speech(value["messages"][-1].content)
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+    main()
