@@ -1,5 +1,5 @@
 
-from core.text_to_speech import OpenAITextToSpeech
+from text_to_speech import OpenAITextToSpeech
 
 tts = OpenAITextToSpeech()
 
