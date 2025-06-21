@@ -1,0 +1,18 @@
+funasr-onnx
+langchain
+langchain-community
+langchain-openai
+langgraph
+librosa
+llama_cpp_python
+loguru
+numpy
+onnx
+onnxruntime
+openai
+PyAudio
+sounddevice
+torch
+
+-e ./third_party/RealtimeSTT
+-e ./third_party/CosyVoice
