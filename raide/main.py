@@ -11,7 +11,7 @@ enable_tts = False
 
 def main():
     asr = RealtimeSTT.AudioToTextRecorder(
-            model_path="./third_party/RealtimeSTT/models/sensevoice_small",
+            model_path="./models/RealtimeSTT/models/sensevoice_small",
             silero_use_onnx=True,
             silero_deactivity_detection=True,
         )
