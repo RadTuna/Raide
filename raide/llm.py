@@ -3,12 +3,11 @@
 
 # External import
 import asyncio
-from typing import Iterator, Union, Any, AsyncIterator, TypedDict
+from typing import Iterator, AsyncIterator
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from langchain_community.chat_models import ChatLlamaCpp
-from langchain_core.runnables.config import RunnableConfig
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.graph.state import CompiledGraph
 from langgraph.graph import START, END, MessagesState, StateGraph
 from langgraph.checkpoint.memory import MemorySaver

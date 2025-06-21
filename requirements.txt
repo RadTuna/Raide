@@ -432,7 +432,7 @@ pydub==0.25.1
     # via gradio
 pygments==2.19.2
     # via rich
-pynini==2.1.6
+#pynini==2.1.6
     # via wetextprocessing
 pyparsing==3.2.3
     # via matplotlib
