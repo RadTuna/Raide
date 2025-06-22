@@ -1,3 +1,7 @@
+
+--index-url https://download.pytorch.org/whl/cu124
+--extra-index-url https://pypi.org/simple
+
 funasr-onnx
 langchain
 langchain-community
@@ -12,7 +16,6 @@ onnxruntime
 openai
 PyAudio
 sounddevice
-torch
 
 -e ./third_party/RealtimeSTT
 -e ./third_party/CosyVoice

@@ -10,6 +10,7 @@ import sounddevice
 import numpy as np
 import sys
 import torchaudio
+import sounddevice as sd
 
 class TextToSpeech(ABC):
     @abstractmethod
@@ -45,8 +46,8 @@ from cosyvoice.utils.file_utils import load_wav
 class CosyVoiceTextToSpeech(TextToSpeech):
     def __init__(self):
         self.model = CosyVoice2(
-            model_dir = "models/cosyvoice2",
-            load_jit = False,
+            model_dir = "./models/cosyvoice2",
+            load_jit = True,
             load_trt = False,
             load_vllm = False,
             fp16 = True
@@ -54,13 +55,20 @@ class CosyVoiceTextToSpeech(TextToSpeech):
         
 
     def text_to_speech(self, text: str):
-        ref_voice = load_wav(wav = "assets/Kafka_Voice_Sample.wav", target_sr = 16000)
+        ref_voice = load_wav(wav = "./assets/Kafka_Voice_Sample.wav", target_sr = 16000)
 
-        instruct_text = "감정을 살려서 말하세요"
-        for i, j in enumerate(self.model.inference_instruct2(
-            tts_text = text,
-            instruct_text = instruct_text,
-            prompt_speech_16k = ref_voice,
-            stream=False
-        )):
-            torchaudio.save('instruct_{}.wav'.format(i), j['tts_speech'], self.model.sample_rate)
+        with sd.OutputStream(
+            samplerate = self.model.sample_rate,
+            channels = 1,
+            dtype = np.float32
+        ) as stream:
+            for out in self.model.inference_cross_lingual(
+                tts_text = text,
+                prompt_speech_16k = ref_voice,
+                stream=True,
+                speed = 0.7
+            ):
+                audio = out['tts_speech'].numpy()
+                if audio.ndim == 2 and audio.shape[0] == 1:
+                    audio = audio[0]
+                stream.write(audio)

@@ -15,7 +15,9 @@ def test_cosyvoice_tts():
 
     tts = CosyVoiceTextToSpeech()
 
-    sample_text = "안녕하세요, 저는 코지보이스입니다."
+    tts.text_to_speech("warmup")
+
+    sample_text = "안녕하세요. 저는 코지보이스의 음성 합성 모델입니다."
 
     print("TTS 시작")
     tts.text_to_speech(sample_text)

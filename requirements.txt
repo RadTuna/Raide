@@ -4,6 +4,9 @@
 #
 #    pip-compile requirements.in
 #
+--index-url https://download.pytorch.org/whl/cu124
+--extra-index-url https://pypi.org/simple
+
 -e file:///D:/Py_Projects/Raide/third_party/CosyVoice
     # via -r requirements.in
 -e file:///D:/Py_Projects/Raide/third_party/RealtimeSTT
@@ -68,7 +71,9 @@ colorama==0.4.6
     #   tqdm
     #   uvicorn
 coloredlogs==15.0.1
-    # via onnxruntime
+    # via
+    #   onnxruntime
+    #   onnxruntime-gpu
 conformer==0.3.2
     # via cosyvoice
 contourpy==1.3.2
@@ -107,7 +112,9 @@ filelock==3.18.0
     #   torch
     #   transformers
 flatbuffers==25.2.10
-    # via onnxruntime
+    # via
+    #   onnxruntime
+    #   onnxruntime-gpu
 fonttools==4.58.4
     # via matplotlib
 frozenlist==1.7.0
@@ -317,6 +324,7 @@ numpy==1.26.4
     #   numba
     #   onnx
     #   onnxruntime
+    #   onnxruntime-gpu
     #   openai-whisper
     #   pandas
     #   pvporcupine
@@ -328,7 +336,10 @@ numpy==1.26.4
     #   soxr
     #   tensorboard
     #   torchmetrics
+    #   torchvision
     #   transformers
+nvidia-cuda-runtime-cu12==12.9.79
+    # via tensorrt-cu12-libs
 omegaconf==2.3.0
     # via
     #   cosyvoice
@@ -345,6 +356,8 @@ onnxruntime==1.22.0
     #   funasr-onnx
     #   openwakeword
     #   silero-vad
+onnxruntime-gpu==1.22.0
+    # via cosyvoice
 openai==1.90.0
     # via
     #   -r requirements.in
@@ -374,6 +387,7 @@ packaging==24.2
     #   marshmallow
     #   matplotlib
     #   onnxruntime
+    #   onnxruntime-gpu
     #   pooch
     #   pytorch-lightning
     #   tensorboard
@@ -386,6 +400,7 @@ pillow==11.2.1
     #   diffusers
     #   gradio
     #   matplotlib
+    #   torchvision
 platformdirs==4.3.8
     # via pooch
 pooch==1.8.2
@@ -400,6 +415,7 @@ protobuf==6.31.1
     #   grpcio-tools
     #   onnx
     #   onnxruntime
+    #   onnxruntime-gpu
     #   tensorboard
 psutil==7.0.0
     # via realtimestt
@@ -559,9 +575,10 @@ starlette==0.46.2
     # via
     #   fastapi
     #   gradio
-sympy==1.14.0
+sympy==1.13.1
     # via
     #   onnxruntime
+    #   onnxruntime-gpu
     #   torch
 tenacity==9.1.2
     # via
@@ -571,6 +588,16 @@ tensorboard==2.19.0
     # via cosyvoice
 tensorboard-data-server==0.7.2
     # via tensorboard
+tensorrt-cu12==10.12.0.36
+    # via cosyvoice
+tensorrt-cu12-bindings==10.12.0.36
+    # via
+    #   cosyvoice
+    #   tensorrt-cu12
+tensorrt-cu12-libs==10.12.0.36
+    # via
+    #   cosyvoice
+    #   tensorrt-cu12
 termcolor==3.1.0
     # via halo
 threadpoolctl==3.6.0
@@ -579,13 +606,12 @@ tiktoken==0.9.0
     # via
     #   langchain-openai
     #   openai-whisper
-tokenizers==0.21.1
+tokenizers==0.19.1
     # via transformers
 tomlkit==0.13.3
     # via gradio
-torch==2.7.1
+torch==2.5.1+cu124
     # via
-    #   -r requirements.in
     #   conformer
     #   cosyvoice
     #   lightning
@@ -595,7 +621,8 @@ torch==2.7.1
     #   silero-vad
     #   torchaudio
     #   torchmetrics
-torchaudio==2.7.1
+    #   torchvision
+torchaudio==2.5.1+cu124
     # via
     #   cosyvoice
     #   realtimestt
@@ -604,6 +631,8 @@ torchmetrics==1.7.3
     # via
     #   lightning
     #   pytorch-lightning
+torchvision==0.20.1+cu124
+    # via cosyvoice
 tqdm==4.67.1
     # via
     #   gdown
@@ -615,7 +644,7 @@ tqdm==4.67.1
     #   openwakeword
     #   pytorch-lightning
     #   transformers
-transformers==4.52.4
+transformers==4.40.1
     # via cosyvoice
 typeguard==4.4.4
     # via inflect
