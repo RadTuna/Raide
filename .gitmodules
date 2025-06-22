@@ -2,6 +2,3 @@
 	path = third_party/RealtimeSTT
 	url = https://github.com/RadTuna/RealtimeSTT-SenseVoice-Minimal.git
 	branch = master
-[submodule "third_party/CosyVoice"]
-	path = third_party/CosyVoice
-	url = https://github.com/RadTuna/CosyVoice.git
