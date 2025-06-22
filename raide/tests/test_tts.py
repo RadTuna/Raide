@@ -10,19 +10,19 @@ def test_openai_tts():
     tts.text_to_speech(sample_text)
     print("TTS 완료")
 
-def test_cosyvoice_tts():
-    from text_to_speech import CosyVoiceTextToSpeech
+def test_openaudio_tts():
+    from text_to_speech import OpenAudioTextToSpeech
 
-    tts = CosyVoiceTextToSpeech()
+    tts = OpenAudioTextToSpeech()
 
-    tts.text_to_speech("warmup")
-
-    sample_text = "안녕하세요. 저는 코지보이스의 음성 합성 모델입니다."
+    #sample_text = "안녕하세요. 저는 OpenAudio의 TTS 모델입니다."
+    sample_text = "でも、未来に起きることは依然としてはっきりしている。本当の試練はこの後にやってくるわ。若い雲騎軍の剣士は、手ごわい敵よ。"
 
     print("TTS 시작")
-    tts.text_to_speech(sample_text)
+    tts.create_speaker_profile(ref_voice_path="./assets/Kafka_Voice_Sample.wav")
+    tts.text_to_speech(text = sample_text)
     print("TTS 완료")
 
 
 #test_openai_tts()
-test_cosyvoice_tts()
+test_openaudio_tts()

@@ -4,10 +4,10 @@
 #
 #    pip-compile requirements.in
 #
---index-url https://download.pytorch.org/whl/cu124
+--index-url https://download.pytorch.org/whl/cu128
 --extra-index-url https://pypi.org/simple
 
--e file:///D:/Py_Projects/Raide/third_party/CosyVoice
+-e file:///D:/Py_Projects/Raide/third_party/fish-speech
     # via -r requirements.in
 -e file:///D:/Py_Projects/Raide/third_party/RealtimeSTT
     # via -r requirements.in
@@ -19,6 +19,7 @@ aiohappyeyeballs==2.6.1
     # via aiohttp
 aiohttp==3.12.13
     # via
+    #   datasets
     #   fsspec
     #   langchain-community
 aiosignal==1.3.2
@@ -35,7 +36,10 @@ anyio==4.9.0
     #   httpx
     #   openai
     #   starlette
-    #   watchfiles
+argbind==0.3.9
+    # via -r requirements.in
+asttokens==3.0.0
+    # via stack-data
 async-timeout==4.0.3
     # via
     #   aiohttp
@@ -44,13 +48,16 @@ attrs==25.3.0
     # via aiohttp
 audioread==3.0.1
     # via librosa
-beautifulsoup4==4.13.4
-    # via gdown
+baize==0.22.2
+    # via kui
+cachetools==6.1.0
+    # via fish-speech
 certifi==2025.6.15
     # via
     #   httpcore
     #   httpx
     #   requests
+    #   sentry-sdk
 cffi==1.17.1
     # via
     #   sounddevice
@@ -59,70 +66,78 @@ charset-normalizer==3.4.2
     # via requests
 click==8.2.1
     # via
-    #   rich-toolkit
     #   typer
     #   uvicorn
+    #   wandb
 colorama==0.4.6
     # via
     #   click
     #   halo
+    #   ipython
     #   log-symbols
     #   loguru
     #   tqdm
-    #   uvicorn
 coloredlogs==15.0.1
-    # via
-    #   onnxruntime
-    #   onnxruntime-gpu
-conformer==0.3.2
-    # via cosyvoice
+    # via onnxruntime
 contourpy==1.3.2
     # via matplotlib
 cycler==0.12.1
     # via matplotlib
 dataclasses-json==0.6.7
     # via langchain-community
+datasets==2.18.0
+    # via fish-speech
 decorator==5.2.1
-    # via librosa
-diffusers==0.33.1
-    # via cosyvoice
+    # via
+    #   ipython
+    #   librosa
+dill==0.3.8
+    # via
+    #   datasets
+    #   multiprocess
 diskcache==5.6.3
     # via llama-cpp-python
 distro==1.9.0
     # via openai
+docstring-parser==0.16
+    # via argbind
 einops==0.8.1
-    # via conformer
-enum34==1.1.10
-    # via pvporcupine
+    # via fish-speech
+einx[torch]==0.2.2
+    # via fish-speech
 exceptiongroup==1.3.0
-    # via anyio
-fastapi==0.115.13
     # via
-    #   cosyvoice
-    #   gradio
-fastapi-cli==0.0.7
-    # via cosyvoice
+    #   anyio
+    #   ipython
+executing==2.2.0
+    # via stack-data
+fastapi==0.115.13
+    # via gradio
 ffmpy==0.6.0
     # via gradio
 filelock==3.18.0
     # via
-    #   diffusers
-    #   gdown
+    #   datasets
     #   huggingface-hub
     #   torch
     #   transformers
+fire==0.7.0
+    # via randomname
 flatbuffers==25.2.10
-    # via
-    #   onnxruntime
-    #   onnxruntime-gpu
+    # via onnxruntime
+flatten-dict==0.4.2
+    # via -r requirements.in
 fonttools==4.58.4
     # via matplotlib
+frozendict==2.4.6
+    # via einx
 frozenlist==1.7.0
     # via
     #   aiohttp
     #   aiosignal
-fsspec[http]==2025.5.1
+fsspec[http]==2024.2.0
     # via
+    #   datasets
     #   gradio-client
     #   huggingface-hub
     #   lightning
@@ -132,10 +147,14 @@ funasr-onnx==0.4.1
     # via
     #   -r requirements.in
     #   realtimestt
-gdown==5.2.0
-    # via cosyvoice
+future==1.0.0
+    # via pyloudnorm
+gitdb==4.0.12
+    # via gitpython
+gitpython==3.1.44
+    # via wandb
 gradio==5.34.2
-    # via cosyvoice
+    # via fish-speech
 gradio-client==1.10.3
     # via gradio
 greenlet==3.2.3
@@ -144,11 +163,8 @@ groovy==0.1.2
     # via gradio
 grpcio==1.73.0
     # via
-    #   cosyvoice
-    #   grpcio-tools
+    #   fish-speech
     #   tensorboard
-grpcio-tools==1.73.0
-    # via cosyvoice
 h11==0.16.0
     # via
     #   httpcore
@@ -157,8 +173,6 @@ halo==0.0.31
     # via realtimestt
 httpcore==1.0.9
     # via httpx
-httptools==0.6.4
-    # via uvicorn
 httpx==0.28.1
     # via
     #   gradio
@@ -171,7 +185,7 @@ httpx-sse==0.4.0
     # via langchain-community
 huggingface-hub==0.33.0
     # via
-    #   diffusers
+    #   datasets
     #   gradio
     #   gradio-client
     #   tokenizers
@@ -179,21 +193,19 @@ huggingface-hub==0.33.0
 humanfriendly==10.0
     # via coloredlogs
 hydra-core==1.3.2
-    # via cosyvoice
-hyperpyyaml==1.2.2
-    # via cosyvoice
+    # via fish-speech
 idna==3.10
     # via
     #   anyio
     #   httpx
     #   requests
     #   yarl
-importlib-metadata==8.7.0
-    # via diffusers
 importlib-resources==6.5.2
-    # via wetextprocessing
-inflect==7.5.0
-    # via cosyvoice
+    # via -r requirements.in
+ipython==8.37.0
+    # via -r requirements.in
+jedi==0.19.2
+    # via ipython
 jieba==0.42.1
     # via realtimestt
 jinja2==3.1.6
@@ -211,10 +223,14 @@ jsonpatch==1.33
     # via langchain-core
 jsonpointer==3.0.0
     # via jsonpatch
+julius==0.2.7
+    # via -r requirements.in
 kaldi-native-fbank==1.21.2
     # via funasr-onnx
 kiwisolver==1.4.8
     # via matplotlib
+kui==1.9.2
+    # via fish-speech
 langchain==0.3.26
     # via
     #   -r requirements.in
@@ -254,10 +270,10 @@ lazy-loader==0.4
 librosa==0.11.0
     # via
     #   -r requirements.in
-    #   cosyvoice
+    #   fish-speech
     #   funasr-onnx
 lightning==2.5.2
-    # via cosyvoice
+    # via fish-speech
 lightning-utilities==0.14.3
     # via
     #   lightning
@@ -270,11 +286,17 @@ llvmlite==0.44.0
 log-symbols==0.0.14
     # via halo
 loguru==0.7.3
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   fish-speech
+loralib==0.1.2
+    # via fish-speech
 markdown==3.8.2
     # via tensorboard
 markdown-it-py==3.0.0
     # via rich
+markdown2==2.5.3
+    # via -r requirements.in
 markupsafe==3.0.2
     # via
     #   gradio
@@ -283,15 +305,13 @@ markupsafe==3.0.2
 marshmallow==3.26.1
     # via dataclasses-json
 matplotlib==3.10.3
-    # via cosyvoice
+    # via -r requirements.in
+matplotlib-inline==0.1.7
+    # via ipython
 mdurl==0.1.2
     # via markdown-it-py
-modelscope==1.27.1
-    # via cosyvoice
-more-itertools==10.7.0
-    # via
-    #   inflect
-    #   openai-whisper
+modelscope==1.17.1
+    # via fish-speech
 mpmath==1.3.0
     # via sympy
 msgpack==1.1.1
@@ -300,21 +320,25 @@ multidict==6.5.0
     # via
     #   aiohttp
     #   yarl
+multiprocess==0.70.16
+    # via datasets
 mypy-extensions==1.1.0
     # via typing-inspect
+natsort==8.4.0
+    # via fish-speech
 networkx==3.4.2
-    # via
-    #   cosyvoice
-    #   torch
+    # via torch
 numba==0.61.2
     # via
     #   librosa
-    #   openai-whisper
+    #   resampy
 numpy==1.26.4
     # via
     #   -r requirements.in
     #   contourpy
-    #   diffusers
+    #   datasets
+    #   einx
+    #   fish-speech
     #   funasr-onnx
     #   gradio
     #   langchain-community
@@ -324,46 +348,38 @@ numpy==1.26.4
     #   numba
     #   onnx
     #   onnxruntime
-    #   onnxruntime-gpu
-    #   openai-whisper
     #   pandas
-    #   pvporcupine
-    #   pyworld
+    #   pyloudnorm
+    #   pystoi
     #   realtimestt
+    #   resampy
     #   scikit-learn
     #   scipy
     #   soundfile
     #   soxr
     #   tensorboard
+    #   torch-stoi
     #   torchmetrics
     #   torchvision
     #   transformers
-nvidia-cuda-runtime-cu12==12.9.79
-    # via tensorrt-cu12-libs
 omegaconf==2.3.0
-    # via
-    #   cosyvoice
-    #   hydra-core
+    # via hydra-core
 onnx==1.18.0
     # via
     #   -r requirements.in
-    #   cosyvoice
     #   funasr-onnx
 onnxruntime==1.22.0
     # via
     #   -r requirements.in
-    #   cosyvoice
     #   funasr-onnx
     #   openwakeword
     #   silero-vad
-onnxruntime-gpu==1.22.0
-    # via cosyvoice
 openai==1.90.0
     # via
     #   -r requirements.in
     #   langchain-openai
-openai-whisper==20240930
-    # via cosyvoice
+opencc-python-reimplemented==0.1.7
+    # via fish-speech
 openwakeword==0.6.0
     # via realtimestt
 orjson==3.10.18
@@ -372,9 +388,12 @@ orjson==3.10.18
     #   langgraph-sdk
     #   langsmith
 ormsgpack==1.10.0
-    # via langgraph-checkpoint
+    # via
+    #   fish-speech
+    #   langgraph-checkpoint
 packaging==24.2
     # via
+    #   datasets
     #   gradio
     #   gradio-client
     #   huggingface-hub
@@ -387,75 +406,97 @@ packaging==24.2
     #   marshmallow
     #   matplotlib
     #   onnxruntime
-    #   onnxruntime-gpu
     #   pooch
     #   pytorch-lightning
     #   tensorboard
     #   torchmetrics
     #   transformers
+    #   wandb
 pandas==2.3.0
-    # via gradio
+    # via
+    #   datasets
+    #   gradio
+parso==0.8.4
+    # via jedi
 pillow==11.2.1
     # via
-    #   diffusers
     #   gradio
     #   matplotlib
     #   torchvision
 platformdirs==4.3.8
-    # via pooch
+    # via
+    #   pooch
+    #   wandb
 pooch==1.8.2
     # via librosa
+prompt-toolkit==3.0.51
+    # via ipython
 propcache==0.3.2
     # via
     #   aiohttp
     #   yarl
 protobuf==6.31.1
     # via
-    #   cosyvoice
-    #   grpcio-tools
     #   onnx
     #   onnxruntime
-    #   onnxruntime-gpu
     #   tensorboard
+    #   wandb
 psutil==7.0.0
-    # via realtimestt
-pvporcupine==1.9.5
+    # via
+    #   realtimestt
+    #   wandb
+pure-eval==0.2.3
+    # via stack-data
+pvporcupine==3.0.5
     # via realtimestt
 pyarrow==20.0.0
-    # via cosyvoice
+    # via datasets
+pyarrow-hotfix==0.7
+    # via datasets
 pyaudio==0.2.14
     # via
     #   -r requirements.in
+    #   fish-speech
     #   realtimestt
 pycparser==2.22
     # via cffi
-pydantic==2.11.7
+pydantic==2.9.2
     # via
-    #   cosyvoice
     #   fastapi
+    #   fish-speech
     #   gradio
+    #   kui
     #   langchain
     #   langchain-core
     #   langgraph
     #   langsmith
     #   openai
     #   pydantic-settings
-pydantic-core==2.33.2
+    #   wandb
+pydantic-core==2.23.4
     # via pydantic
-pydantic-settings==2.9.1
+pydantic-settings==2.10.0
     # via langchain-community
 pydub==0.25.1
-    # via gradio
+    # via
+    #   fish-speech
+    #   gradio
 pygments==2.19.2
-    # via rich
-#pynini==2.1.6
-    # via wetextprocessing
+    # via
+    #   ipython
+    #   rich
+pyloudnorm==0.1.1
+    # via -r requirements.in
 pyparsing==3.2.3
     # via matplotlib
 pyreadline3==3.5.4
     # via humanfriendly
-pysocks==1.7.1
-    # via requests
+pyrootutils==1.0.4
+    # via fish-speech
+pystoi==0.4.1
+    # via
+    #   -r requirements.in
+    #   torch-stoi
 python-dateutil==2.9.0.post0
     # via
     #   matplotlib
@@ -463,21 +504,20 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
     # via
     #   pydantic-settings
-    #   uvicorn
+    #   pyrootutils
 python-multipart==0.0.20
     # via gradio
 pytorch-lightning==2.5.2
     # via lightning
 pytz==2025.2
     # via pandas
-pyworld==0.3.5
-    # via cosyvoice
 pyyaml==6.0.2
     # via
+    #   argbind
+    #   datasets
     #   funasr-onnx
     #   gradio
     #   huggingface-hub
-    #   hyperpyyaml
     #   langchain
     #   langchain-community
     #   langchain-core
@@ -485,16 +525,16 @@ pyyaml==6.0.2
     #   omegaconf
     #   pytorch-lightning
     #   transformers
-    #   uvicorn
+    #   wandb
+randomname==0.2.1
+    # via -r requirements.in
 regex==2024.11.6
     # via
-    #   diffusers
     #   tiktoken
     #   transformers
-requests[socks]==2.32.4
+requests==2.32.4
     # via
-    #   diffusers
-    #   gdown
+    #   datasets
     #   huggingface-hub
     #   langchain
     #   langchain-community
@@ -505,51 +545,56 @@ requests[socks]==2.32.4
     #   requests-toolbelt
     #   tiktoken
     #   transformers
+    #   wandb
 requests-toolbelt==1.0.0
     # via langsmith
+resampy==0.4.3
+    # via fish-speech
 rich==14.0.0
     # via
-    #   cosyvoice
-    #   rich-toolkit
+    #   fish-speech
     #   typer
-rich-toolkit==0.14.7
-    # via fastapi-cli
-ruamel-yaml==0.18.14
-    # via hyperpyyaml
-ruamel-yaml-clib==0.2.12
-    # via ruamel-yaml
 ruff==0.12.0
     # via gradio
 safehttpx==0.1.6
     # via gradio
 safetensors==0.5.3
-    # via
-    #   diffusers
-    #   transformers
+    # via transformers
 scikit-learn==1.7.0
     # via
     #   librosa
     #   openwakeword
-scipy==1.15.1
+scipy==1.15.3
     # via
     #   funasr-onnx
     #   librosa
     #   openwakeword
+    #   pyloudnorm
+    #   pystoi
     #   realtimestt
     #   scikit-learn
 semantic-version==2.10.0
     # via gradio
 sentencepiece==0.2.0
     # via funasr-onnx
+sentry-sdk==2.30.0
+    # via wandb
+setproctitle==1.3.6
+    # via wandb
 shellingham==1.5.4
     # via typer
 silero-vad==5.1.2
-    # via realtimestt
+    # via
+    #   fish-speech
+    #   realtimestt
 six==1.17.0
     # via
+    #   flatten-dict
     #   halo
     #   python-dateutil
     #   tensorboard
+smmap==5.0.2
+    # via gitdb
 sniffio==1.3.1
     # via
     #   anyio
@@ -558,11 +603,8 @@ sounddevice==0.5.2
     # via -r requirements.in
 soundfile==0.13.1
     # via
-    #   cosyvoice
     #   librosa
     #   realtimestt
-soupsieve==2.7
-    # via beautifulsoup4
 soxr==0.5.0.post1
     # via librosa
 spinners==0.0.24
@@ -571,96 +613,94 @@ sqlalchemy==2.0.41
     # via
     #   langchain
     #   langchain-community
+stack-data==0.6.3
+    # via ipython
 starlette==0.46.2
     # via
     #   fastapi
     #   gradio
-sympy==1.13.1
+sympy==1.14.0
     # via
+    #   einx
     #   onnxruntime
-    #   onnxruntime-gpu
     #   torch
 tenacity==9.1.2
     # via
     #   langchain-community
     #   langchain-core
 tensorboard==2.19.0
-    # via cosyvoice
+    # via fish-speech
 tensorboard-data-server==0.7.2
     # via tensorboard
-tensorrt-cu12==10.12.0.36
-    # via cosyvoice
-tensorrt-cu12-bindings==10.12.0.36
-    # via
-    #   cosyvoice
-    #   tensorrt-cu12
-tensorrt-cu12-libs==10.12.0.36
-    # via
-    #   cosyvoice
-    #   tensorrt-cu12
 termcolor==3.1.0
-    # via halo
+    # via
+    #   fire
+    #   halo
 threadpoolctl==3.6.0
     # via scikit-learn
 tiktoken==0.9.0
     # via
+    #   fish-speech
     #   langchain-openai
-    #   openai-whisper
-tokenizers==0.19.1
+tokenizers==0.21.1
     # via transformers
 tomlkit==0.13.3
     # via gradio
-torch==2.5.1+cu124
+torch==2.7.1+cu128
     # via
-    #   conformer
-    #   cosyvoice
+    #   -r requirements.in
+    #   einx
+    #   julius
     #   lightning
-    #   openai-whisper
     #   pytorch-lightning
     #   realtimestt
     #   silero-vad
+    #   torch-stoi
     #   torchaudio
     #   torchmetrics
     #   torchvision
-torchaudio==2.5.1+cu124
+torch-stoi==0.2.3
+    # via -r requirements.in
+torchaudio==2.7.1+cu128
     # via
-    #   cosyvoice
+    #   -r requirements.in
     #   realtimestt
     #   silero-vad
+    #   torch-stoi
 torchmetrics==1.7.3
     # via
     #   lightning
     #   pytorch-lightning
-torchvision==0.20.1+cu124
-    # via cosyvoice
+torchvision==0.22.1+cu128
+    # via -r requirements.in
 tqdm==4.67.1
     # via
-    #   gdown
+    #   datasets
     #   huggingface-hub
     #   lightning
     #   modelscope
     #   openai
-    #   openai-whisper
     #   openwakeword
     #   pytorch-lightning
     #   transformers
-transformers==4.40.1
-    # via cosyvoice
-typeguard==4.4.4
-    # via inflect
-typer==0.16.0
+traitlets==5.14.3
     # via
-    #   fastapi-cli
-    #   gradio
+    #   ipython
+    #   matplotlib-inline
+transformers==4.52.4
+    # via fish-speech
+typer==0.16.0
+    # via gradio
 typing-extensions==4.14.0
     # via
     #   anyio
-    #   beautifulsoup4
     #   exceptiongroup
     #   fastapi
     #   gradio
     #   gradio-client
     #   huggingface-hub
+    #   ipython
+    #   kui
     #   langchain-core
     #   librosa
     #   lightning
@@ -673,55 +713,50 @@ typing-extensions==4.14.0
     #   pydantic-core
     #   pytorch-lightning
     #   rich
-    #   rich-toolkit
     #   sqlalchemy
     #   torch
-    #   typeguard
     #   typer
     #   typing-inspect
     #   typing-inspection
     #   uvicorn
+    #   wandb
 typing-inspect==0.9.0
     # via dataclasses-json
 typing-inspection==0.4.1
-    # via
-    #   pydantic
-    #   pydantic-settings
+    # via pydantic-settings
 tzdata==2025.2
     # via pandas
 urllib3==2.5.0
     # via
     #   modelscope
     #   requests
-uvicorn[standard]==0.34.3
+    #   sentry-sdk
+uvicorn==0.34.3
     # via
-    #   cosyvoice
-    #   fastapi-cli
+    #   fish-speech
     #   gradio
-watchfiles==1.1.0
-    # via uvicorn
+wandb==0.20.1
+    # via fish-speech
+wcwidth==0.2.13
+    # via prompt-toolkit
 webrtcvad-wheels==2.0.14
     # via realtimestt
 websockets==15.0.1
-    # via
-    #   gradio-client
-    #   uvicorn
+    # via gradio-client
 werkzeug==3.1.3
     # via tensorboard
-wetextprocessing==1.0.4.1
-    # via cosyvoice
-wget==3.2
-    # via cosyvoice
 win32-setctime==1.2.0
     # via loguru
 xxhash==3.5.0
-    # via langgraph
+    # via
+    #   datasets
+    #   langgraph
 yarl==1.20.1
     # via aiohttp
-zipp==3.23.0
-    # via importlib-metadata
 zstandard==0.23.0
-    # via langsmith
+    # via
+    #   fish-speech
+    #   langsmith
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

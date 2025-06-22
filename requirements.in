@@ -1,6 +1,11 @@
 
---index-url https://download.pytorch.org/whl/cu124
+--index-url https://download.pytorch.org/whl/cu128
 --extra-index-url https://pypi.org/simple
+
+torch==2.7.1
+torchaudio==2.7.1
+torchvision==0.22.1
+triton-windows==3.3.1.post19
 
 funasr-onnx
 langchain
@@ -17,5 +22,17 @@ openai
 PyAudio
 sounddevice
 
+argbind
+importlib-resources
+ipython
+markdown2
+matplotlib
+pyloudnorm
+pystoi
+randomname
+torch-stoi
+flatten_dict
+julius
+
 -e ./third_party/RealtimeSTT
--e ./third_party/CosyVoice
+-e ./third_party/fish-speech

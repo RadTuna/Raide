@@ -2,3 +2,6 @@
 	path = third_party/RealtimeSTT
 	url = https://github.com/RadTuna/RealtimeSTT-SenseVoice-Minimal.git
 	branch = master
+[submodule "third_party/fish-speech"]
+	path = third_party/fish-speech
+	url = https://github.com/RadTuna/fish-speech.git
