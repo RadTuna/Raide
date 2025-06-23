@@ -1,5 +1,3 @@
-
-
 # Internal import
 from speaker_profile import profile_store
 from fish_speech.models.dac import inference as DAC
@@ -29,10 +27,10 @@ class TextToSpeech(ABC):
 @dataclass
 class TextToSpeechConfig:
     model_path: str = "./models/openaudio-s1-mini"
-    speaker_profile: Optional[str] = None,
-    seed: int = 42,
-    temperature: float = 0.8,
-    repetition_penalty: float = 1.1,
+    speaker_profile: Optional[str] = None
+    seed: int = 42
+    temperature: float = 0.8
+    repetition_penalty: float = 1.1
     top_p: float = 0.8
 
 class OpenAudioTextToSpeech(TextToSpeech):
@@ -52,10 +50,10 @@ class OpenAudioTextToSpeech(TextToSpeech):
         self.dac_model = DAC.load_model(config_name="modded_dac_vq", checkpoint_path=dac_path)
 
         self.t2c_model, self.decode_one_token = T2C.init_model(
-            checkpoint_path = config.model_path,
-            device = self.device,
-            precision = precision,
-            compile = True
+            checkpoint_path=config.model_path,
+            device=self.device,
+            precision=precision,
+            compile=True
         )
 
         with torch.device(self.device):
@@ -75,7 +73,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
             speaker_profile = profile_store.get_profile(config.speaker_profile)
             self._create_speaker_profile(
                 ref_voice_path=speaker_profile.voice_path,
-                ref_voice_text= speaker_profile.prompt
+                ref_voice_text=speaker_profile.prompt
             )
 
     def text_to_speech(self, text: str):
@@ -89,7 +87,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
         audio = self._gen_audio()
 
         # play audio
-        sd.play(audio, samplerate=self.dac_model.sample_rate, blocking = True)
+        sd.play(audio, samplerate=self.dac_model.sample_rate, blocking=True)
 
     def warmpup(self):
         if self.speaker_tokens is None:
@@ -125,26 +123,25 @@ class OpenAudioTextToSpeech(TextToSpeech):
 
     @torch.inference_mode()
     def _gen_semantic(self, text: str):
-    
         torch.manual_seed(self.config.seed)
         if torch.cuda.is_available():
             torch.cuda.manual_seed(self.config.seed)
 
         generator = T2C.generate_long(
-            model = self.t2c_model,
-            device = self.device,
-            decode_one_token = self.decode_one_token,
-            text = text,
-            num_samples = 1,
-            max_new_tokens = 0,
-            top_p = 0.8,
-            repetition_penalty = 1.1,
-            temperature = 0.8,
-            compile = True,
-            iterative_prompt = True,
-            chunk_length = 300,
-            prompt_text = self.prompt_text,
-            prompt_tokens = self.speaker_tokens,
+            model=self.t2c_model,
+            device=self.device,
+            decode_one_token=self.decode_one_token,
+            text=text,
+            num_samples=1,
+            max_new_tokens=0,
+            top_p=0.8,
+            repetition_penalty=1.1,
+            temperature=0.8,
+            compile=True,
+            iterative_prompt=True,
+            chunk_length=300,
+            prompt_text=self.prompt_text,
+            prompt_tokens=self.speaker_tokens,
         )
 
         idx = 0
@@ -157,8 +154,8 @@ class OpenAudioTextToSpeech(TextToSpeech):
             elif response.action == "next":
                 if codes:
                     self.semantic_tokens.append(torch.cat(codes, dim=1).detach().cpu())
-                    logger.info(f"Saved codes to self.semantic_tokens")
-                logger.info(f"Next sample")
+                    logger.info("Saved codes to self.semantic_tokens")
+                logger.info("Next sample")
                 codes = []
                 idx += 1
             else:
@@ -166,7 +163,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
 
     @torch.inference_mode()
     def _gen_audio(self):
-        logger.info(f"Processing precomputed indices")
+        logger.info("Processing precomputed indices")
 
         indices = self.semantic_tokens.pop(0)
 
@@ -177,7 +174,9 @@ class OpenAudioTextToSpeech(TextToSpeech):
         audios, audio_lengths = self.dac_model.decode(indices, indices_lens)
         audio_time = audios.shape[-1] / self.dac_model.sample_rate
 
-        logger.info(f"Generated audio of shape {audios.shape}, equivalent to {audio_time:.2f} seconds from {indices.shape[1]} features, features/second: {indices.shape[1] / audio_time:.2f}")
+        logger.info(
+            f"Generated audio of shape {audios.shape}, equivalent to {audio_time:.2f} seconds from {indices.shape[1]} features, features/second: {indices.shape[1] / audio_time:.2f}"
+        )
 
         # return audio
         audio = audios[0, 0].detach().float().cpu().numpy()

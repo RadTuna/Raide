@@ -1,4 +1,3 @@
-
 from omegaconf import OmegaConf
 import os
 from dataclasses import dataclass
@@ -32,9 +31,8 @@ class SpeakerProfileStore:
             return self.profiles[name]
         else:
             raise ValueError(f"Profile '{name}' not found.")
-        
+    
     def is_profile_exists(self, name: str) -> bool:
         return name in self.profiles
-            
 
 profile_store = SpeakerProfileStore()

@@ -1,4 +1,3 @@
-
 # Internal import
 
 # External import
@@ -83,7 +82,7 @@ class LocalLanguageModel(LanguageModel):
         ]
 
         self.compiled_graph: CompiledGraph = self.__build_graph()
-        self.chat_config = { "configurable": { "thread_id": "first_chat" } }
+        self.chat_config = {"configurable": {"thread_id": "first_chat"}}
         self.prompt_template = ChatPromptTemplate.from_messages([
             SystemMessage(content="\n".join(system_prompt)),
             MessagesPlaceholder(variable_name="messages")
@@ -93,10 +92,10 @@ class LocalLanguageModel(LanguageModel):
         if self.compiled_graph is None:
             return
         
-        user_input = [ HumanMessage(content=user_message) ]
+        user_input = [HumanMessage(content=user_message)]
 
         async for chunk, _ in self.compiled_graph.astream(
-                input={ "messages": user_input },
+                input={"messages": user_input},
                 config=self.chat_config,
                 stream_mode="messages"
             ):
@@ -109,8 +108,7 @@ class LocalLanguageModel(LanguageModel):
         prompt = self.prompt_template.invoke(state)
         response = await self.model.ainvoke(prompt, config)
         print(f"Response: {response}")
-        return { "messages": [response] }
-
+        return {"messages": [response]}
 
     def __build_graph(self) -> CompiledGraph:
         graph = StateGraph(state_schema=ModelState)

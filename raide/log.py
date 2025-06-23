@@ -1,8 +1,7 @@
-
 from loguru import logger
 import sys
 def filter_log_record(record):
-    blacklist = [ "fish_speech", "RealtimeSTT" ]
+    blacklist = ["fish_speech", "RealtimeSTT"]
     return not any(black in record["name"] for black in blacklist)
 
 def init_logger(suppress_other_log: bool = True):

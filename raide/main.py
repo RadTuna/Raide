@@ -1,4 +1,3 @@
-
 # Internal imports
 from text_to_speech import OpenAudioTextToSpeech, TextToSpeechConfig
 from llm import LocalLanguageModel, LanguageModelConfig
@@ -21,10 +20,10 @@ def main():
     tts.warmpup()
 
     asr = RealtimeSTT.AudioToTextRecorder(
-            model_path=config.asr.model_path,
-            silero_use_onnx=True,
-            silero_deactivity_detection=True,
-        )
+        model_path=config.asr.model_path,
+        silero_use_onnx=True,
+        silero_deactivity_detection=True,
+    )
 
     llm_config = config.to_llm_config()
     llm = LocalLanguageModel(config=llm_config)
@@ -46,7 +45,6 @@ def main():
             tts.text_to_speech(full_message)
             time.sleep(1)
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     multiprocessing.freeze_support()
     main()
