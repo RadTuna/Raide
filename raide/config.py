@@ -37,9 +37,9 @@ class Config:
 
     def load(self, config_dir: str):
         paths = {
-            "asr": os.path.join(config_dir, "asr_config.json"),
-            "llm": os.path.join(config_dir, "llm_config.json"),
-            "tts": os.path.join(config_dir, "tts_config.json")
+            "asr": os.path.join(config_dir, "asr_config.yaml"),
+            "llm": os.path.join(config_dir, "llm_config.yaml"),
+            "tts": os.path.join(config_dir, "tts_config.yaml")
         }
 
         for section, path in paths.items():
@@ -50,6 +50,7 @@ class Config:
     def to_llm_config(self) -> LanguageModelConfig:
         return LanguageModelConfig(
             model_path=self.config.llm.model_path,
+            speaker_profile=self.config.tts.speaker_profile,
             context_window=self.config.llm.context_window,
             output_max_tokens=self.config.llm.output_max_tokens,
             temperature=self.config.llm.temperature,

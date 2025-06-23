@@ -27,7 +27,7 @@ class TextToSpeech(ABC):
 @dataclass
 class TextToSpeechConfig:
     model_path: str = "./models/openaudio-s1-mini"
-    speaker_profile: Optional[str] = None
+    speaker_profile: str = "kr_firefly"
     seed: int = 42
     temperature: float = 0.8
     repetition_penalty: float = 1.1
@@ -73,7 +73,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
             speaker_profile = profile_store.get_profile(config.speaker_profile)
             self._create_speaker_profile(
                 ref_voice_path=speaker_profile.voice_path,
-                ref_voice_text=speaker_profile.prompt
+                ref_voice_text=speaker_profile.voice_transcript
             )
 
     def text_to_speech(self, text: str):

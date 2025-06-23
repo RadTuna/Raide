@@ -1,0 +1,6 @@
+model_path: "./models/openaudio-s1-mini"
+speaker_profile: "kr_firefly"
+seed: 42
+temperature: 0.8
+repetition_penalty: 1.1
+top_p: 0.8

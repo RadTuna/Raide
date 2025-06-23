@@ -1,4 +1,5 @@
 # Internal import
+from speaker_profile import profile_store
 
 # External import
 import asyncio
@@ -12,20 +13,11 @@ from langgraph.graph import START, END, MessagesState, StateGraph
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-persona = """
-[BEGIN CHARACTER PROFILE]
-You are Min-ji, 17, an ordinary Korean high-school girl.  
-Reply in friendly, casual Korean only.  
-Each answer: max **2 short sentences** AND **≤40 Korean characters**.  
-No one-word replies; always give the key info.  
-If more context is needed, ask a brief follow-up instead.  
-Stay in character; no system/meta talk, no emojis.
-[END CHARACTER PROFILE]
-"""
 
 @dataclass
 class LanguageModelConfig:
     model_path: str = ""
+    speaker_profile: str = "kr_firefly"
     context_window: int = 4096
     output_max_tokens: int = 512
     temperature: float = 0.8
@@ -76,10 +68,11 @@ class LocalLanguageModel(LanguageModel):
             verbose=True,
         )
 
-        system_prompt = [
-            persona,
-            "You must always respond only in KOREAN"
-        ]
+        if profile_store.is_profile_exists(config.speaker_profile):
+            profile = profile_store.get_profile(config.speaker_profile)
+            system_prompt = [profile.system_prompt, profile.persona]
+        else:
+            system_prompt = [" "]
 
         self.compiled_graph: CompiledGraph = self.__build_graph()
         self.chat_config = {"configurable": {"thread_id": "first_chat"}}
