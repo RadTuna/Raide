@@ -19,6 +19,7 @@ onnx
 onnxruntime
 PyAudio
 sounddevice
+omegaconf
 
 argbind
 importlib-resources

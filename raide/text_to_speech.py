@@ -1,7 +1,7 @@
 
 
 # Internal import
-from pickle import load
+from speaker_profile import profile_store
 from fish_speech.models.dac import inference as DAC
 from fish_speech.models.text2semantic import inference as T2C
 
@@ -9,7 +9,7 @@ from fish_speech.models.text2semantic import inference as T2C
 from typing import Optional
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-import sounddevice
+import os
 import numpy as np
 import torch
 import torchaudio
@@ -26,16 +26,17 @@ class TextToSpeech(ABC):
     def warmpup(self):
         pass
 
-    def create_speaker_profile(self, ref_voice_path: str, ref_voice_text: str):
-        pass
-
 @dataclass
 class TextToSpeechConfig:
-    seed: int = 42
-
+    model_path: str = "./models/openaudio-s1-mini"
+    speaker_profile: Optional[str] = None,
+    seed: int = 42,
+    temperature: float = 0.8,
+    repetition_penalty: float = 1.1,
+    top_p: float = 0.8
 
 class OpenAudioTextToSpeech(TextToSpeech):
-    def __init__(self, config: TextToSpeechConfig = TextToSpeechConfig()):
+    def __init__(self, config: TextToSpeechConfig):
         self.config = config
         self.speaker_tokens = None
         self.semantic_tokens = []
@@ -47,10 +48,11 @@ class OpenAudioTextToSpeech(TextToSpeech):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         precision = torch.half if self.device != "cuda" else torch.bfloat16
 
-        self.dac_model = DAC.load_model(config_name="modded_dac_vq", checkpoint_path="./models/openaudio-s1-mini/codec.pth")
+        dac_path = os.path.join(config.model_path, "codec.pth")
+        self.dac_model = DAC.load_model(config_name="modded_dac_vq", checkpoint_path=dac_path)
 
         self.t2c_model, self.decode_one_token = T2C.init_model(
-            checkpoint_path = "./models/openaudio-s1-mini",
+            checkpoint_path = config.model_path,
             device = self.device,
             precision = precision,
             compile = True
@@ -67,6 +69,14 @@ class OpenAudioTextToSpeech(TextToSpeech):
             torch.cuda.synchronize()
 
         logger.info(f"Time to load model: {time.time() - t0:.02f} seconds")
+
+        if profile_store.is_profile_exists(config.speaker_profile):
+            logger.info(f"Loading speaker profile: {config.speaker_profile}")
+            speaker_profile = profile_store.get_profile(config.speaker_profile)
+            self._create_speaker_profile(
+                ref_voice_path=speaker_profile.voice_path,
+                ref_voice_text= speaker_profile.prompt
+            )
 
     def text_to_speech(self, text: str):
         if self.speaker_tokens is None:
@@ -88,7 +98,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
         self._gen_semantic("warmpup")
         self._gen_audio()
 
-    def create_speaker_profile(self, ref_voice_path: str, ref_voice_text: str):
+    def _create_speaker_profile(self, ref_voice_path: str, ref_voice_text: str):
         logger.info(f"Processing in-place reconstruction of {ref_voice_path}")
 
         # Load audio

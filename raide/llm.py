@@ -26,6 +26,7 @@ Stay in character; no system/meta talk, no emojis.
 
 @dataclass
 class LanguageModelConfig:
+    model_path: str = ""
     context_window: int = 4096
     output_max_tokens: int = 512
     temperature: float = 0.8
@@ -60,9 +61,9 @@ class ModelState(MessagesState):
     pass
 
 class LocalLanguageModel(LanguageModel):
-    def __init__(self, model_path: str, config: LanguageModelConfig):
+    def __init__(self, config: LanguageModelConfig):
         self.model = ChatLlamaCpp(
-            model_path=model_path,
+            model_path=config.model_path,
             n_gpu_layers=-1,
             n_batch=512,
             n_ctx=config.context_window,
