@@ -2,7 +2,8 @@
 
 # Internal import
 from pickle import load
-import import_secret_key
+from fish_speech.models.dac import inference as DAC
+from fish_speech.models.text2semantic import inference as T2C
 
 # External import
 from typing import Optional
@@ -15,6 +16,7 @@ import torchaudio
 import time
 import sounddevice as sd
 from loguru import logger
+
 
 class TextToSpeech(ABC):
     @abstractmethod
@@ -31,32 +33,6 @@ class TextToSpeech(ABC):
 class TextToSpeechConfig:
     seed: int = 42
 
-from openai import OpenAI
-
-class OpenAITextToSpeech(TextToSpeech):
-    def __init__(self):
-        self.client = OpenAI()
-        self.speech = self.client.audio.speech
-        self.chunk_size = 2048
-
-    def text_to_speech(self, text: str):
-        response = self.speech.create(model="tts-1", voice="nova", input=text, response_format="pcm")
-
-        logger.info(f"Received TTS response")
-
-        with sounddevice.OutputStream(
-            channels=1,
-            samplerate=24000,
-            dtype=np.int16
-        ) as stream:
-            for chunk in response.iter_bytes(self.chunk_size):
-                stream.write(np.frombuffer(chunk, dtype=np.int16))
-
-            stream.stop()
-
-
-from fish_speech.models.dac import inference as DAC
-from fish_speech.models.text2semantic import inference as T2C
 
 class OpenAudioTextToSpeech(TextToSpeech):
     def __init__(self, config: TextToSpeechConfig = TextToSpeechConfig()):
