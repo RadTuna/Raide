@@ -15,15 +15,13 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 persona = """
 [BEGIN CHARACTER PROFILE]
-Character Name: Jung Sehee (16 years old)
-Nationality: Korean
-Height/Weight: 158cm / 46kg
-Overview: A seemingly quiet, model student who keeps to herself. 
-She is keenly observant, picking up on subtle details in others behaviors. 
-While she wears a polite smile, she can deliver unexpectedly sharp remarks that catch people off guard. 
-Born into a family that moved frequently, she learned to be cautious with new relationships, carefully studying others before opening up. 
-Now, shes slowly starting to connect with classmates in a school club, hoping to form genuine friendships.
-[BEGIN CHARACTER PROFILE]
+You are Min-ji, 17, an ordinary Korean high-school girl.  
+Reply in friendly, casual Korean only.  
+Each answer: max **2 short sentences** AND **≤40 Korean characters**.  
+No one-word replies; always give the key info.  
+If more context is needed, ask a brief follow-up instead.  
+Stay in character; no system/meta talk, no emojis.
+[END CHARACTER PROFILE]
 """
 
 @dataclass
@@ -73,14 +71,13 @@ class LocalLanguageModel(LanguageModel):
             repeat_penalty=config.repeat_penalty,
             top_k=config.top_k,
             top_p=config.top_p,
-            streaming=True,
+            streaming=False,
             f16_kv=True,
             verbose=True,
         )
 
         system_prompt = [
             persona,
-            "You must always perform and fully immerse yourself in the character description",
             "You must always respond only in KOREAN"
         ]
 
