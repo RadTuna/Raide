@@ -41,7 +41,9 @@ class OpenAITextToSpeech(TextToSpeech):
 
     def text_to_speech(self, text: str):
         response = self.speech.create(model="tts-1", voice="nova", input=text, response_format="pcm")
-        print("TTS Response 받음")
+
+        logger.info(f"Received TTS response")
+
         with sounddevice.OutputStream(
             channels=1,
             samplerate=24000,
@@ -120,9 +122,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
         audio = torchaudio.functional.resample(audio, sr, self.dac_model.sample_rate)
 
         audios = audio[None].to(self.device)
-        logger.info(
-            f"Loaded audio with {audios.shape[2] / self.dac_model.sample_rate:.2f} seconds"
-        )
+        logger.info(f"Loaded audio with {audios.shape[2] / self.dac_model.sample_rate:.2f} seconds")
 
         # VQ Encoder
         audio_lengths = torch.tensor([audios.shape[2]], device=self.device, dtype=torch.long)
@@ -191,9 +191,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
         audios, audio_lengths = self.dac_model.decode(indices, indices_lens)
         audio_time = audios.shape[-1] / self.dac_model.sample_rate
 
-        logger.info(
-            f"Generated audio of shape {audios.shape}, equivalent to {audio_time:.2f} seconds from {indices.shape[1]} features, features/second: {indices.shape[1] / audio_time:.2f}"
-        )
+        logger.info(f"Generated audio of shape {audios.shape}, equivalent to {audio_time:.2f} seconds from {indices.shape[1]} features, features/second: {indices.shape[1] / audio_time:.2f}")
 
         # return audio
         audio = audios[0, 0].detach().float().cpu().numpy()
