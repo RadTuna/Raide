@@ -17,10 +17,11 @@ class Config:
                 "model_path": "./models/gemma3/gemma-3-4b-it-q4_0.gguf",
                 "context_window": 2048,
                 "output_max_tokens": 512,
-                "temperature": 0.8,
-                "repeat_penalty": 1.1,
-                "top_k": 40,
-                "top_p": 0.9
+                "temperature": 1.0,
+                "repeat_penalty": 1.0,
+                "top_k": 64,
+                "top_p": 0.95,
+                "min_p": 0.01
             },
             "tts": {
                 "model_path": "./models/openaudio-s1-mini",
@@ -56,7 +57,8 @@ class Config:
             temperature=self.config.llm.temperature,
             repeat_penalty=self.config.llm.repeat_penalty,
             top_k=self.config.llm.top_k,
-            top_p=self.config.llm.top_p
+            top_p=self.config.llm.top_p,
+            min_p=self.config.llm.min_p
         )
     
     def to_tts_config(self) -> TextToSpeechConfig:

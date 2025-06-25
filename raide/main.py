@@ -47,7 +47,7 @@ def main(use_websocket: bool = False):
             tts.text_to_speech(full_message)
             time.sleep(1)
 
-def run_web_interface():
+def run_web_frontend():
     VoiceChatFrontend().run()
 
 if __name__ == "__main__":
@@ -62,11 +62,11 @@ if __name__ == "__main__":
         use_websocket = False
     elif args.mode == "web":
         logger.info("Launching web interface...")
-        mp.Process(target=run_web_interface).start()
+        mp.Process(target=run_web_frontend).start()
         use_websocket = True
         time.sleep(2)
     else:
         logger.error("Invalid mode specified. Use 'cli' or 'web'.")
         exit(1)
 
-    #main(use_websocket=use_websocket)
+    main(use_websocket=use_websocket)

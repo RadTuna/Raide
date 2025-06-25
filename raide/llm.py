@@ -20,10 +20,11 @@ class LanguageModelConfig:
     speaker_profile: str = "kr_firefly"
     context_window: int = 4096
     output_max_tokens: int = 512
-    temperature: float = 0.8
-    repeat_penalty: float = 1.1
-    top_k: int = 40
-    top_p: float = 0.9
+    temperature: float = 1.0
+    repeat_penalty: float = 1.0
+    top_k: int = 64
+    top_p: float = 0.95
+    min_p: float = 0.01
 
 class LanguageModel(ABC):
     @abstractmethod
@@ -66,6 +67,10 @@ class LocalLanguageModel(LanguageModel):
             streaming=False,
             f16_kv=True,
             verbose=True,
+            model_kwargs={
+                "chat_format": "gemma",
+                "min_p": config.min_p
+            }
         )
 
         if profile_store.is_profile_exists(config.speaker_profile):
@@ -74,10 +79,10 @@ class LocalLanguageModel(LanguageModel):
         else:
             system_prompt = [" "]
 
-        self.compiled_graph: CompiledGraph = self.__build_graph()
-        self.chat_config = {"configurable": {"thread_id": "first_chat"}}
+        self.compiled_graph: CompiledGraph = self._build_graph()
+        self.chat_config = {"configurable": {"thread_id": "unique_chat"}}
         self.prompt_template = ChatPromptTemplate.from_messages([
-            SystemMessage(content="\n".join(system_prompt)),
+            HumanMessage(content="\n".join(system_prompt)),
             MessagesPlaceholder(variable_name="messages")
         ])
     
@@ -95,17 +100,17 @@ class LocalLanguageModel(LanguageModel):
             yield chunk.content
 
     def warmup(self):
-        result = self.model.invoke("short response")
+        self.model.invoke("short response")
 
-    async def __call_model(self, state: ModelState, config: LanguageModelConfig):
+    async def _call_model(self, state: ModelState, config: LanguageModelConfig):
         prompt = self.prompt_template.invoke(state)
         response = await self.model.ainvoke(prompt, config)
         print(f"Response: {response}")
         return {"messages": [response]}
 
-    def __build_graph(self) -> CompiledGraph:
+    def _build_graph(self) -> CompiledGraph:
         graph = StateGraph(state_schema=ModelState)
-        graph.add_node("model", self.__call_model)
+        graph.add_node("model", self._call_model)
         graph.add_edge(START, "model")
 
         memory = MemorySaver()
