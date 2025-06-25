@@ -5,10 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Program",
+            "name": "Python Debugger: CLI App",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/raide/main.py",
+            "args": ["--mode", "cli"],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/raide"
+            }
+        },
+        {
+            "name": "Python Debugger: Web App",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/raide/main.py",
+            "args": ["--mode", "web"],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/raide"
             }

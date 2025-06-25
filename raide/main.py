@@ -4,14 +4,16 @@ from llm import LocalLanguageModel, LanguageModelConfig
 import RealtimeSTT
 import log
 from config import config
+from frontend import VoiceChatFrontend
 
 # External imports
-import multiprocessing
+import multiprocessing as mp
 import time
 from loguru import logger
+import argparse
 
 
-def main():
+def main(use_websocket: bool = False):
     log.init_logger()
     config.load("./config")
 
@@ -45,6 +47,26 @@ def main():
             tts.text_to_speech(full_message)
             time.sleep(1)
 
+def run_web_interface():
+    VoiceChatFrontend().run()
+
 if __name__ == "__main__":
-    multiprocessing.freeze_support()
-    main()
+    mp.freeze_support()
+
+    parser = argparse.ArgumentParser(description="Raide AI Assistant")
+    parser.add_argument("--mode", type=str, required=True, help="Mode to run the application: 'cli' or 'web'")
+
+    args = parser.parse_args()
+ 
+    if args.mode == "cli":
+        use_websocket = False
+    elif args.mode == "web":
+        logger.info("Launching web interface...")
+        mp.Process(target=run_web_interface).start()
+        use_websocket = True
+        time.sleep(2)
+    else:
+        logger.error("Invalid mode specified. Use 'cli' or 'web'.")
+        exit(1)
+
+    #main(use_websocket=use_websocket)
