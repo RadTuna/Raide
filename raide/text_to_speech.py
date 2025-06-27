@@ -14,14 +14,20 @@ import torchaudio
 import time
 import sounddevice as sd
 from loguru import logger
+import asyncio
 
 
 class TextToSpeech(ABC):
     @abstractmethod
-    def text_to_speech(self, text: str):
+    def text_to_speech(self, text: str) -> np.ndarray:
         pass
 
-    def warmpup(self):
+    @abstractmethod
+    def warmup(self):
+        pass
+
+    @abstractmethod
+    def get_sample_rate(self) -> int:
         pass
 
 @dataclass
@@ -76,7 +82,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
                 ref_voice_text=speaker_profile.voice_transcript
             )
 
-    def text_to_speech(self, text: str):
+    def text_to_speech(self, text: str) -> np.ndarray:
         if self.speaker_tokens is None:
             raise ValueError("Speaker profile not created. Call create_speaker_profile first.")
 
@@ -86,15 +92,17 @@ class OpenAudioTextToSpeech(TextToSpeech):
         logger.info("Generating audio from semantic tokens")
         audio = self._gen_audio()
 
-        # play audio
-        sd.play(audio, samplerate=self.dac_model.sample_rate, blocking=True)
+        return audio
 
-    def warmpup(self):
+    def warmup(self):
         if self.speaker_tokens is None:
             raise ValueError("Speaker profile not created. Call create_speaker_profile first.")
 
         self._gen_semantic("warmpup")
         self._gen_audio()
+
+    def get_sample_rate(self) -> int:
+        return self.dac_model.sample_rate
 
     def _create_speaker_profile(self, ref_voice_path: str, ref_voice_text: str):
         logger.info(f"Processing in-place reconstruction of {ref_voice_path}")
@@ -162,7 +170,7 @@ class OpenAudioTextToSpeech(TextToSpeech):
                 logger.error(f"Error: {response}")
 
     @torch.inference_mode()
-    def _gen_audio(self):
+    def _gen_audio(self) -> np.ndarray:
         logger.info("Processing precomputed indices")
 
         indices = self.semantic_tokens.pop(0)

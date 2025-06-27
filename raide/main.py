@@ -1,9 +1,5 @@
 # Internal imports
-from text_to_speech import OpenAudioTextToSpeech, TextToSpeechConfig
-from llm import LocalLanguageModel, LanguageModelConfig
-import RealtimeSTT
-import log
-from config import config
+from raide import Raide, RaideMode
 from frontend import VoiceChatFrontend
 
 # External imports
@@ -13,39 +9,9 @@ from loguru import logger
 import argparse
 
 
-def main(use_websocket: bool = False):
-    log.init_logger()
-    config.load("./config")
-
-    tts_config = config.to_tts_config()
-    tts = OpenAudioTextToSpeech(config=tts_config)
-    tts.warmpup()
-
-    asr = RealtimeSTT.AudioToTextRecorder(
-        model_path=config.asr.model_path,
-        silero_use_onnx=True,
-        silero_deactivity_detection=True,
-    )
-
-    llm_config = config.to_llm_config()
-    llm = LocalLanguageModel(config=llm_config)
-
-    while True:
-        asr.wait_audio()
-        recognized_text = asr.transcribe()
-
-        logger.info(f"User: {recognized_text}")
-
-        chunk_list = []
-        for chunk in llm.chat_sync(recognized_text):
-            chunk_list.append(chunk)
-
-        full_message = "".join(chunk_list)
-        logger.info(f"AI: {full_message}")
-        
-        if len(full_message) > 0:
-            tts.text_to_speech(full_message)
-            time.sleep(1)
+def main(mode: RaideMode):
+    raide = Raide(mode=mode, play_audio=mode == RaideMode.STANDALONE)
+    raide.run()
 
 def run_web_frontend():
     VoiceChatFrontend().run()
@@ -59,14 +25,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
  
     if args.mode == "cli":
-        use_websocket = False
+        raide_mode = RaideMode.STANDALONE
     elif args.mode == "web":
         logger.info("Launching web interface...")
         mp.Process(target=run_web_frontend).start()
-        use_websocket = True
+        raide_mode = RaideMode.WEBSOCKET
         time.sleep(2)
+    elif args.mode == "websocket":
+        logger.info("Launching WebSocket interface...")
+        raide_mode = RaideMode.WEBSOCKET
     else:
         logger.error("Invalid mode specified. Use 'cli' or 'web'.")
         exit(1)
 
-    main(use_websocket=use_websocket)
+    main(mode=raide_mode)

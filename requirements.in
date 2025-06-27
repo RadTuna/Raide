@@ -21,6 +21,7 @@ PyAudio
 sounddevice
 omegaconf
 gradio
+websockets
 
 argbind
 importlib-resources

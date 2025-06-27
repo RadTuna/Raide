@@ -28,22 +28,8 @@ class LanguageModelConfig:
 
 class LanguageModel(ABC):
     @abstractmethod
-    def chat(self, user_message: str) -> AsyncIterator[str]:
+    def chat(self, user_message: str) -> Iterator[str]:
         pass
-
-    def chat_sync(self, user_message: str) -> Iterator[str]:
-        async_gen = self.chat(user_message)
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            while True:
-                try:
-                    chunk = loop.run_until_complete(async_gen.__anext__())
-                    yield chunk
-                except StopAsyncIteration:
-                    break
-        finally:
-            loop.close()
 
     @abstractmethod
     def warmup(self):
@@ -86,13 +72,13 @@ class LocalLanguageModel(LanguageModel):
             MessagesPlaceholder(variable_name="messages")
         ])
     
-    async def chat(self, user_message: str) -> AsyncIterator[str]:
+    def chat(self, user_message: str) -> Iterator[str]:
         if self.compiled_graph is None:
             return
         
         user_input = [HumanMessage(content=user_message)]
 
-        async for chunk, _ in self.compiled_graph.astream(
+        for chunk, _ in self.compiled_graph.stream(
                 input={"messages": user_input},
                 config=self.chat_config,
                 stream_mode="messages"
@@ -102,9 +88,9 @@ class LocalLanguageModel(LanguageModel):
     def warmup(self):
         self.model.invoke("short response")
 
-    async def _call_model(self, state: ModelState, config: LanguageModelConfig):
+    def _call_model(self, state: ModelState, config: LanguageModelConfig):
         prompt = self.prompt_template.invoke(state)
-        response = await self.model.ainvoke(prompt, config)
+        response = self.model.invoke(prompt, config)
         print(f"Response: {response}")
         return {"messages": [response]}
 
