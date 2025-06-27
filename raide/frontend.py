@@ -24,12 +24,14 @@ class VoiceChatFrontend:
         started_talking: bool = False
         response_audio_buffer: bytes | None = None
         chunk_sent: bool = False
+        frontend_port: int = 7860
+        websocket_port: int = 8765
 
         def __post_init__(self):
             if self.conversation is None:
                 self.conversation = []
 
-    def run(self):
+    def run(self, frontend_port: int, websocket_port: int):
         with gr.Blocks() as demo:
             with gr.Row():
                 with gr.Column():
@@ -37,7 +39,10 @@ class VoiceChatFrontend:
                 with gr.Column():
                     chatbot = gr.Chatbot(label="Conversation", type="messages")
                     output_audio = gr.Audio(label="Output Audio", streaming=True, autoplay=True)
+
             state = gr.State(value=self.AppState())
+            state.frontend_port = frontend_port
+            state.websocket_port = websocket_port
 
             stream = input_audio.stream(
                 self._process_audio,
@@ -59,7 +64,7 @@ class VoiceChatFrontend:
                 [input_audio]
             )
 
-        demo.launch()
+        demo.launch(server_port=frontend_port)
 
     async def _process_audio(self, audio: tuple, state: AppState):
         if audio[1] is None or len(audio[1]) == 0:
@@ -191,6 +196,6 @@ class VoiceChatFrontend:
 
     async def _ensure_websocket(self, state: AppState):
         if state.websocket is None:
-            state.websocket = await client.connect("ws://localhost:8765", max_size=self.DEFAULT_WEBSOCKET_MAX_SIZE)
+            state.websocket = await client.connect(f"ws://localhost:{state.websocket_port}", max_size=self.DEFAULT_WEBSOCKET_MAX_SIZE)
             logger.info("WebSocket connection established.")
         return state.websocket

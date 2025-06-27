@@ -40,9 +40,10 @@ class RaideMode(Enum):
 class Raide:
     DEFAULT_WEBSOCKET_MAX_SIZE = 100 * 1024 * 1024
 
-    def __init__(self, mode: RaideMode = RaideMode.STANDALONE, play_audio: bool = False):
+    def __init__(self, mode: RaideMode, port: int, play_audio: bool = False):
         # read only
         self.mode = mode
+        self.port = port
         self.play_audio = play_audio
         self.sample_rate = 16000
         self.asr = None
@@ -145,8 +146,8 @@ class Raide:
 
     async def _network_run(self):
         logger.info("Starting WebSocket server...")
-        async with server.serve(handler=self._network_loop, host="localhost", port=8765, max_size=self.DEFAULT_WEBSOCKET_MAX_SIZE):
-            logger.info("WebSocket server started on ws://localhost:8765")
+        async with server.serve(handler=self._network_loop, host="localhost", port=self.port, max_size=self.DEFAULT_WEBSOCKET_MAX_SIZE):
+            logger.info(f"WebSocket server started on ws://localhost:{self.port}")
             await asyncio.Future()  # Run forever
 
     async def _network_loop(self, connection: server.ServerConnection):
