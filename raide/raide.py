@@ -5,6 +5,7 @@ import RealtimeSTT
 import log
 from config import config
 import utils
+import profiler
 
 # External Imports
 from typing import Optional
@@ -17,6 +18,7 @@ from contextlib import contextmanager
 from websockets.asyncio import server
 import json
 import numpy as np
+import time
 
 
 class SendPacketType(Enum):
@@ -100,49 +102,57 @@ class Raide:
         while self.running.is_set():
             await asyncio.to_thread(self.asr.wait_audio)
 
-            self.inferencing.set()
-            await self.send_queue.put(SendPacket(type=SendPacketType.START_RESPONSE))
+            with profiler.profile("inferencing"):
+                self.inferencing.set()
+                await self._enqueue_send_packet(SendPacket(type=SendPacketType.START_RESPONSE))
 
-            recognized_text = self.asr.transcribe()
+                recognized_text = self.asr.transcribe()
 
-            asr_send_packet = SendPacket(
-                type=SendPacketType.TRANSCRIPT,
-                text=recognized_text
-            )
-            await self.send_queue.put(asr_send_packet)
-
-            logger.info(f"User: {recognized_text}")
-
-            def get_llm_response():
-                chunk_list = []
-                for chunk in self.llm.chat(recognized_text):
-                    chunk_list.append(chunk)
-                return chunk_list
-            chunk_list = await asyncio.to_thread(get_llm_response)
-
-            full_message = "".join(chunk_list)
-            logger.info(f"AI: {full_message}")
-
-            llm_send_packet = SendPacket(
-                type=SendPacketType.RESPONSE_TEXT,
-                text=full_message
-            )
-            await self.send_queue.put(llm_send_packet)
-
-            if len(full_message) > 0:
-                audio = await asyncio.to_thread(self.tts.text_to_speech, text=full_message)
-
-                if self.play_audio:
-                    await asyncio.to_thread(sd.play, audio, samplerate=self.sample_rate, blocking=True)
-
-                tts_send_packet = SendPacket(
-                    type=SendPacketType.RESPONSE_AUDIO,
-                    audio=audio.tobytes()
+                asr_send_packet = SendPacket(
+                    type=SendPacketType.TRANSCRIPT,
+                    text=recognized_text
                 )
-                await self.send_queue.put(tts_send_packet)
+                await self._enqueue_send_packet(asr_send_packet)
 
-            await self.send_queue.put(SendPacket(type=SendPacketType.END_RESPONSE))
-            self.inferencing.clear()
+                logger.info(f"User: {recognized_text}")
+
+                def get_llm_response():
+                    chunk_list = []
+                    for chunk in self.llm.chat(recognized_text):
+                        chunk_list.append(chunk)
+                    return chunk_list
+                
+                with profiler.profile("llm"):
+                    chunk_list = await asyncio.to_thread(get_llm_response)
+
+                full_message = "".join(chunk_list)
+                logger.info(f"AI: {full_message}")
+
+                llm_send_packet = SendPacket(
+                    type=SendPacketType.RESPONSE_TEXT,
+                    text=full_message
+                )
+                await self._enqueue_send_packet(llm_send_packet)
+
+                if len(full_message) > 0:
+                    with profiler.profile("tts"):
+                        audio = await asyncio.to_thread(self.tts.text_to_speech, text=full_message)
+
+                    if self.play_audio:
+                        await asyncio.to_thread(sd.play, audio, samplerate=self.sample_rate, blocking=True)
+
+                    tts_send_packet = SendPacket(
+                        type=SendPacketType.RESPONSE_AUDIO,
+                        audio=audio.tobytes()
+                    )
+                    await self._enqueue_send_packet(tts_send_packet)
+
+                await self._enqueue_send_packet(SendPacket(type=SendPacketType.END_RESPONSE))
+                self.inferencing.clear()
+
+            if self.mode == RaideMode.STANDALONE:
+                time.sleep(2)
+
 
     async def _network_run(self):
         logger.info("Starting WebSocket server...")
@@ -204,3 +214,9 @@ class Raide:
             await connection.send(json.dumps(send_json))
             if send_packet.type == SendPacketType.RESPONSE_AUDIO:
                 await connection.send(send_packet.audio)
+
+    async def _enqueue_send_packet(self, packet: SendPacket):
+        if self.mode == RaideMode.WEBSOCKET:
+            await self.send_queue.put(packet)
+
+        
